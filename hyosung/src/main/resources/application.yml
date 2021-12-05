@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/jpatest?serverTimezone=UTC
+    username: coupang
+    password: coupang
+jpa:
+  hibernate.ddl-auto: create
+  properties:
+    hubernage:
+      show_sql: true
+      format_sql: true
