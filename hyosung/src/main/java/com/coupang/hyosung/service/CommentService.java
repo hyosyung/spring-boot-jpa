@@ -22,16 +22,16 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteCommentById(Long id) throws Exception {
+    public void deleteCommentById(Long id) {
         Try.runRunnable(() -> repository.deleteById(id))
-                .onFailure(e -> log.error("댓글을 삭제하는데에 실패하였습니다."))
-                .getOrElseThrow(e -> new Exception(e.getMessage()));
+                .onFailure(e -> log.error("댓글을 삭제하는데에 실패하였습니다.", e))
+                .recover(e -> null);
     }
 
     @Transactional
-    public void createComment(Long postId, String content) throws Exception {
+    public void createComment(Long postId, String content) {
         Try.runRunnable(() -> repository.save(new Comment(postId, content)))
-                .onFailure(e -> log.error("댓글을 저장하는데에 실패하였습니다."))
-                .getOrElseThrow(e -> new Exception(e.getMessage()));
+                .onFailure(e -> log.error("댓글을 저장하는데에 실패하였습니다.", e))
+                .recover(e -> null);
     }
 }

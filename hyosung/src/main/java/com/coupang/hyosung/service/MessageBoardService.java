@@ -2,6 +2,7 @@ package com.coupang.hyosung.service;
 
 import com.coupang.hyosung.model.dto.CommentDto;
 import com.coupang.hyosung.model.dto.PostDto;
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 
 import java.rmi.server.ExportException;
@@ -14,19 +15,23 @@ public class MessageBoardService {
     private final PostService postService;
     private final CommentService commentService;
 
-    public void deleteComment(Long id) throws Exception {
+    public void deleteComment(Long id) {
         commentService.deleteCommentById(id);
     }
 
-    public void deletePost(Long id) throws Exception {
+    public PostDto getPost(Long id) {
+        return PostDto.of(postService.getPostById(id));
+    }
+
+    public void deletePost(Long id) {
         postService.deletePost(id);
     }
 
-    public void createPost(String title, String content) throws Exception {
+    public void createPost(String title, String content) {
         postService.createPost(title, content);
     }
 
-    public void createComment(Long postId, String content) throws Exception {
+    public void createComment(Long postId, String content) {
         commentService.createComment(postId, content);
     }
 
@@ -42,7 +47,7 @@ public class MessageBoardService {
                 .collect(Collectors.toList());
     }
 
-    public void updatePost(Long id, String title, String content) throws Exception {
-        postService.updatePost(id,title,content);
+    public void updatePost(Long id, String title, String content) {
+        postService.updatePost(id, title, content);
     }
 }

@@ -21,27 +21,32 @@ public class PostService {
         return repository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Post getPostById(Long id) {
+        return repository.getById(id);
+    }
+
     @Transactional
-    public void deletePost(Long id) throws Exception {
+    public void deletePost(Long id) {
         Try.runRunnable(() -> repository.deleteById(id))
-                .onFailure(e -> log.error("게시글을 삭제하는데에 실패하였습니다."))
-                .getOrElseThrow(e -> new Exception(e.getMessage()));
+                .onFailure(e -> log.error("게시글을 삭제하는데에 실패하였습니다.", e))
+                .recover(e -> null);
     }
 
     @Transactional
-    public void createPost(String title, String content) throws Exception {
+    public void createPost(String title, String content) {
         Try.runRunnable(() -> repository.save(new Post(title, content)))
-                .onFailure(e -> log.error("게시글을 저장하는데에 실패하였습니다."))
-                .getOrElseThrow(e -> new Exception(e.getMessage()));
+                .onFailure(e -> log.error("게시글을 저장하는데에 실패하였습니다.", e))
+                .recover(e -> null);
     }
 
     @Transactional
-    public void updatePost(Long id, String title, String content) throws Exception {
+    public void updatePost(Long id, String title, String content) {
         Post post = repository.getById(id);
         post.setTitle(title);
         post.setContent(content);
         Try.runRunnable(() -> repository.save(post))
-                .onFailure(e -> log.error("게시글을 업데이트하는데에 실패하였습니다. 게시글 id:{}", id))
-                .getOrElseThrow(e -> new Exception(e.getMessage()));
+                .onFailure(e -> log.error("게시글을 업데이트하는데에 실패하였습니다. 게시글 id:{}", id, e))
+                .recover(e -> null);
     }
 }
