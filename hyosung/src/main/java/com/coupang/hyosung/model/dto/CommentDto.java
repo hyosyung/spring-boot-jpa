@@ -15,7 +15,7 @@ public class CommentDto {
 
     public static CommentDto of(Comment comment) {
         CommentDto commentDto = new CommentDto();
-        commentDto.setId(commentDto.getId());
+        commentDto.setId(comment.getId());
         commentDto.setContent(comment.getContent());
         commentDto.setCreatedAt(comment.getCreatedDate());
         return commentDto;

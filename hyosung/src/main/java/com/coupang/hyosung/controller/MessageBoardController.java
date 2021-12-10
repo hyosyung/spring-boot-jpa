@@ -1,5 +1,6 @@
 package com.coupang.hyosung.controller;
 
+import com.coupang.hyosung.model.dto.PostDto;
 import com.coupang.hyosung.service.MessageBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,7 @@ public class MessageBoardController {
     @PostMapping("/delete/post")
     public String deletePost(Model model, @RequestParam Long id) {
         boardService.deletePost(id);
-        model.addAttribute("post", boardService.getPost(id));
+        model.addAttribute("posts", boardService.getAllPosts());
         return "index.html";
     }
 
@@ -49,7 +50,7 @@ public class MessageBoardController {
         return "postDetail.html";
     }
 
-    @PostMapping("create/new-comment")
+    @PostMapping("/create/new-comment")
     public String createComment(Model model, @RequestParam Long postId, @RequestParam String content) {
         boardService.createComment(postId, content);
         model.addAttribute("post", boardService.getPost(postId));
@@ -63,5 +64,16 @@ public class MessageBoardController {
         model.addAttribute("post", boardService.getPost(postId));
         model.addAttribute("comments", boardService.getCommentsByPostId(postId));
         return "postDetail.html";
+    }
+
+    @GetMapping("/get/modify-page")
+    public String getModifyPage(Model model, @RequestParam Long id) {
+        model.addAttribute("post", boardService.getPost(id));
+        return "modify.html";
+    }
+
+    @GetMapping("/get/create-page")
+    public String getCreatePage() {
+        return "create.html";
     }
 }

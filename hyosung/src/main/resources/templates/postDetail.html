@@ -5,9 +5,54 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>게시글 상세</title>
 </head>
 <body>
-
+<h1>게시글 상세</h1>
+<div>
+    <a th:href="@{/get/post-list}">목록</a>
+</div>
+<div>
+    <a th:href="@{/get/modify-page(id=${post.id})}">수정</a>
+</div>
+<div>
+    <form th:action="@{/delete/post(id=${post.id})}" method="post">
+        <button type="submit">삭제</button>
+    </form>
+</div>
+<div>
+    <ul th:with="p=${post}">
+        <li>
+            제목 : <span th:text="${p.title}"/>
+        </li>
+        <li>
+            내용 : <span th:text="${p.content}"/>
+        </li>
+        <li>
+            작성 : <span th:text="${p.createdAt}"/>
+        </li>
+        <li>
+            수정 : <span th:text="${p.updatedAt}"/>
+        </li>
+    </ul>
+</div>
+<h2>댓글</h2>
+<div>
+    <form th:action="@{/create/new-comment(postId=${post.id})}" method="post">
+        <div class="form-group">
+            <label for="content">내용</label>
+            <input type="text" width="500" id="content" name="content">
+        </div>
+        <button type="submit">작성</button>
+    </form>
+</div>
+<ul>
+    <li th:each="comment : ${comments}">
+        <span th:text="${comment.content}"/> - <span th:text="${comment.createdAt}"/>
+        <form th:action="@{/delete/comment(id=${comment.id},postId=${post.id})}" method="post">
+            <button type="submit">삭제</button>
+        </form>
+    </li>
+</ul>
 </body>
 </html>

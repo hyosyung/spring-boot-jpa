@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>게시글 수정</title>
+</head>
+<body>
+<h1>게시글 수정</h1>
+<form th:action="@{/update/post(id=${post.id})}" method="post">
+    <div class="titleInput">
+        <span>제목</span>
+        <input type="text" size="20" th:value="${post.title}" id="title" name="title">
+    </div>
+    <div class="contentInput">
+        <span>내용</span>
+        <input type="text" size="50" th:value="${post.content}" id="content" name="content">
+    </div>
+    <button type="submit">수정</button>
+</form>
+</body>
+</html>

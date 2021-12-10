@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,13 @@ public class Post extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Post> comments = new ArrayList<>();
 
+    @Column(name = "deleted")
+    private boolean deleted = false;
+
     public Post(String title, String content) {
         this.title = title;
         this.content = content;
+        this.createdDate = LocalDateTime.now();
     }
 
 }

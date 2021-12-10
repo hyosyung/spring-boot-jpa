@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -18,14 +20,20 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<Comment> getCommentsByPostId(Long postId) {
-        return repository.findCommentsByPostId(postId);
+        return repository.findCommentsByPostIdAndDeletedFalse(postId);
     }
 
     @Transactional
     public void deleteCommentById(Long id) {
-        Try.runRunnable(() -> repository.deleteById(id))
-                .onFailure(e -> log.error("댓글을 삭제하는데에 실패하였습니다.", e))
-                .recover(e -> null);
+        Try.of(() -> repository.findById(id))
+                .onFailure(e -> log.error("댓글의 정보를 조회하는데에 실패하였습니다.", e))
+                .map(Optional::get)
+                .map(p -> {
+                    p.setDeleted(true);
+                    p.setModifiedDate(LocalDateTime.now());
+                    return p;
+                })
+                .peek(repository::save);
     }
 
     @Transactional

@@ -8,6 +8,18 @@
     <title>게시글 목록</title>
 </head>
 <body>
-
+<h1>게시글 목록</h1>
+<div class="createPost">
+    <a th:href="@{/get/create-page}">New</a>
+</div>
+<div class="postList">
+    <ul>
+        <li th:each="post : ${posts}">
+            <a th:href="@{/get/post(id=${post.id})}">
+                <span th:text="${post.title}"/>
+            </a>
+        </li>
+    </ul>
+</div>
 </body>
 </html>

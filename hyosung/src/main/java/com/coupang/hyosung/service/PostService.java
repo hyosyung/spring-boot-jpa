@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -18,7 +20,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<Post> getPostList() {
-        return repository.findAll();
+        return repository.findPostByDeletedFalse();
     }
 
     @Transactional(readOnly = true)
@@ -28,9 +30,15 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long id) {
-        Try.runRunnable(() -> repository.deleteById(id))
-                .onFailure(e -> log.error("게시글을 삭제하는데에 실패하였습니다.", e))
-                .recover(e -> null);
+        Try.of(() -> repository.findById(id))
+                .onFailure(e -> log.error("삭제할 게시글을 찾는데에 실패하였습니다.", e))
+                .map(Optional::get)
+                .map(post -> {
+                    post.setDeleted(true);
+                    post.setModifiedDate(LocalDateTime.now());
+                    return post;
+                })
+                .peek(repository::save);
     }
 
     @Transactional
@@ -42,11 +50,14 @@ public class PostService {
 
     @Transactional
     public void updatePost(Long id, String title, String content) {
-        Post post = repository.getById(id);
-        post.setTitle(title);
-        post.setContent(content);
-        Try.runRunnable(() -> repository.save(post))
-                .onFailure(e -> log.error("게시글을 업데이트하는데에 실패하였습니다. 게시글 id:{}", id, e))
-                .recover(e -> null);
+        Try.of(() -> repository.getById(id))
+                .map(p -> {
+                    p.setTitle(title);
+                    p.setContent(content);
+                    p.setModifiedDate(LocalDateTime.now());
+                    return p;
+                })
+                .onFailure(e -> log.error("업데이트할 게시글을 찾는데에 실패하였습니다.", e))
+                .peek(repository::save);
     }
 }
