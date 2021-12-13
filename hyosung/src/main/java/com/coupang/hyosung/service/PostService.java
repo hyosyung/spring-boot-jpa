@@ -32,32 +32,31 @@ public class PostService {
     public void deletePost(Long id) {
         Try.of(() -> repository.findById(id))
                 .onFailure(e -> log.error("삭제할 게시글을 찾는데에 실패하였습니다.", e))
-                .map(Optional::get)
-                .map(post -> {
+                .map(opt -> opt.orElse(null))
+                .andThen(post -> {
                     post.setDeleted(true);
                     post.setModifiedDate(LocalDateTime.now());
-                    return post;
                 })
-                .peek(repository::save);
+                .andThen(repository::save)
+                .onFailure(e -> log.error("게시글을 삭제하지 못했습니다."));
     }
 
     @Transactional
     public void createPost(String title, String content) {
         Try.runRunnable(() -> repository.save(new Post(title, content)))
-                .onFailure(e -> log.error("게시글을 저장하는데에 실패하였습니다.", e))
-                .recover(e -> null);
+                .onFailure(e -> log.error("게시글을 저장하는데에 실패하였습니다.", e));
     }
 
     @Transactional
     public void updatePost(Long id, String title, String content) {
         Try.of(() -> repository.getById(id))
-                .map(p -> {
+                .onFailure(e -> log.error("업데이트할 게시글을 찾는데에 실패하였습니다.", e))
+                .andThen(p -> {
                     p.setTitle(title);
                     p.setContent(content);
                     p.setModifiedDate(LocalDateTime.now());
-                    return p;
                 })
-                .onFailure(e -> log.error("업데이트할 게시글을 찾는데에 실패하였습니다.", e))
-                .peek(repository::save);
+                .andThen(repository::save)
+                .onFailure(e -> log.error("업데이트한 게시글을 저장하는데에 실패하였습니다."));
     }
 }

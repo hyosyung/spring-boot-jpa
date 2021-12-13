@@ -27,19 +27,18 @@ public class CommentService {
     public void deleteCommentById(Long id) {
         Try.of(() -> repository.findById(id))
                 .onFailure(e -> log.error("댓글의 정보를 조회하는데에 실패하였습니다.", e))
-                .map(Optional::get)
-                .map(p -> {
+                .map(opt -> opt.orElse(null))
+                .andThen(p -> {
                     p.setDeleted(true);
                     p.setModifiedDate(LocalDateTime.now());
-                    return p;
                 })
-                .peek(repository::save);
+                .andThen(repository::save)
+                .onFailure(e-> log.error("게시글을 삭제하지 못했습니다."));
     }
 
     @Transactional
     public void createComment(Long postId, String content) {
         Try.runRunnable(() -> repository.save(new Comment(postId, content)))
-                .onFailure(e -> log.error("댓글을 저장하는데에 실패하였습니다.", e))
-                .recover(e -> null);
+                .onFailure(e -> log.error("댓글을 저장하는데에 실패하였습니다.", e));
     }
 }
