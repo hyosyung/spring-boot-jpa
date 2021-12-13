@@ -38,32 +38,25 @@ public class MessageBoardController {
     @PostMapping("/delete/post")
     public String deletePost(Model model, @RequestParam Long id) {
         boardService.deletePost(id);
-        model.addAttribute("posts", boardService.getAllPosts());
-        return "index.html";
+        return "redirect:/get/post-list";
     }
 
     @PostMapping("/update/post")
     public String updatePost(Model model, @RequestParam Long id, @RequestParam String title, @RequestParam String content) {
         boardService.updatePost(id, title, content);
-        model.addAttribute("post", boardService.getPost(id));
-        model.addAttribute("comments", boardService.getCommentsByPostId(id));
-        return "postDetail.html";
+        return "redirect:/get/post?id=" + id;
     }
 
     @PostMapping("/create/new-comment")
     public String createComment(Model model, @RequestParam Long postId, @RequestParam String content) {
         boardService.createComment(postId, content);
-        model.addAttribute("post", boardService.getPost(postId));
-        model.addAttribute("comments", boardService.getCommentsByPostId(postId));
-        return "postDetail.html";
+        return "redirect:/get/post?id=" + postId;
     }
 
     @PostMapping("/delete/comment")
     public String deleteComment(Model model, @RequestParam Long id, @RequestParam Long postId) {
         boardService.deleteComment(id);
-        model.addAttribute("post", boardService.getPost(postId));
-        model.addAttribute("comments", boardService.getCommentsByPostId(postId));
-        return "postDetail.html";
+        return "redirect:/get/post?id=" + postId;
     }
 
     @GetMapping("/get/modify-page")
